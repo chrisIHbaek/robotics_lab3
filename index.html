@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+  </head>
+
+  <body>
+
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-5">
+          <h1>Edison Control Interface</h1>
+        </div>
+      </div>
+      
+      <div class="row">
+          <div class="col-lg-3"></div>
+          <div class="col-lg-6">            
+            <br><br>
+            <div class="row">
+              <div class="col-lg-1"></div>
+              <div class="col-lg-10">
+                <!-- <p id="bpm_value">Current bpm Value: </p> -->
+                <!-- action="http://10.0.1.9:8000" method="post"-->
+                <form class="form-inline">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-addon">bpm</div>
+                      <input id="bpm_input" name="bpm" type="text" class="form-control" id="exampleInputAmount" placeholder="50-200">
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="set_bpm">Set</button>             <button type="submit" class="btn btn-danger" id="get_bpm">Get bpm Manually</button>
+                </form>                  
+              </div>
+              <div class="col-lg-1"></div>
+            </div>
+            
+            
+            <br><br> 
+
+            <div class="row">
+              <div class="col-lg-4"></div>
+              <div class="col-lg-4">
+
+                <form action="http://10.0.1.9:8000" method="post">
+                  <label for="exampleInputEmail1">Choose A Song:</label>
+                    <div class="radio">
+                    <label>
+                      <input type="radio" name="options" value="1" >
+                      Smoke on the Water   
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="options" value="2" >
+                      Marry Had a Little Lamb
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="options" value="3" >
+                      Hot Cross Buns
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="options" value="4" >
+                      Iron Man
+                    </label>
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="song_select">Select</button>
+                </form>                                
+              </div>
+             <div class="col-lg-4"></div>
+            </div>
+                   
+           
+            <br><br>
+
+            <div class="row">
+                <div class="col-lg-0"></div>
+                <div class="col-lg-12">
+                <form action="http://10.0.1.9:8000" method="post">
+                  <button type="submit" class="btn btn-success" name="btn" id="robot_play">Let the robot play!</button>
+                  <button type="submit" class="btn btn-info" name="btn"  id="user_play">Wanna try it yourself?</button>    
+                  <button type="submit" class="btn btn-warning" name="btn" id="heart_play">Heartbeat music!</button>    
+                  <button type="submit" class="btn btn-secondary" name="btn" id="simon">Play Simon game!</button>     
+                </form>                
+                </div>
+                <div class="col-lg-2"></div>
+                </div>
+            </div>
+          <div class="col-lg-4"></div>
+      </div>
+
+      <br><br><br><br>
+      <div class="row">
+        <div class="col-lg-5"></div>  
+        <div class="col-lg-4">
+          <button class="btn btn-info" name="btn"  id="comparison">Show comparison</button>  
+        </div>  
+        <div class="col-lg-4"></div>  
+      </div>
+
+      <br><br>
+
+      <div class="row">
+        <div class="col-lg-2"></div>  
+        <div class="col-lg-8">
+          <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        </div>  
+        <div class="col-lg-2"></div>  
+      </div>
+  </div>
+
+<script type="text/javascript">
+var server_addr = "http://10.0.1.9:8000" 
+var edison1_addr = "http://10.0.1.9:8001"
+var edison2_addr = "http://10.0.1.4:8001"
+$("#set_bpm").click(function() {
+  event.preventDefault();
+  $.post(server_addr,"bpm="+$("#bpm_input").val() ,function(data){
+    alert("bpm val successfully set!");
+  });
+})
+
+
+$("#get_bpm").click(function(){
+  event.preventDefault();
+  $.post(server_addr,"get_bpm",function(data){
+    console.log("get_bpm response received");
+  });
+  setTimeout(console.log("timer test"), 5000);
+  $.post(server_addr, "read_bpm", function(data){
+    alert("Got bpm val successfully!");
+    console.log("read_bpm returns", data);
+    $("#bpm_input").val(data);
+  });  
+});
+  
+$("#robot_play").click(function(data) {
+    event.preventDefault();
+    $.post(server_addr,"btn=robot_play",function(data){
+      alert("command sent");
+  });
+});
+
+$("#user_play").click(function(data) {
+    event.preventDefault();
+    $.post(server_addr,"btn=user_play",function(data){
+      alert("command sent");
+  });
+});
+
+$("#heart_play").click(function(data) {
+    event.preventDefault();
+    $.post(server_addr,"btn=heart_play",function(data){
+      alert("command sent");
+  });
+});
+
+$("#simon").click(function(data) {
+    event.preventDefault();
+    $.post(server_addr,"btn=simon",function(data){
+      alert("The game will start in 5 seconds!");
+    });
+});
+
+$("#comparison").click(function() {
+  $('#container').toggle();  
+  $.post(server_addr,"comparison",function(data){
+    $(function () {
+    $('#container').highcharts({
+            chart: {
+                type: 'area'
+            },
+            title: {
+                text: 'Comparison btw Robot playing and User playing'
+            },
+            xAxis: {
+                allowDecimals: false,
+                labels: {
+                    formatter: function () {
+                        return this.value; // clean, unformatted number for year
+                    }
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Notes'
+                },
+            },
+            series: [{
+                name: 'Robot',
+                data: data[0]
+            }, {
+                name: 'User',
+                data: data[1]
+            }]
+        });
+      });
+
+  });
+
+});
+
+
+
+</script>
+  
+    
+     
+  </body>
+</html>
