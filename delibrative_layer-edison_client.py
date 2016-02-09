@@ -1,13 +1,14 @@
 import mraa
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from SocketServer import ThreadingMixIn
 import threading
 import json
 import httplib, urllib
 import SocketServer
 import datetime
 import time
+import simon
 import HeartBeat as hb
+from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+from SocketServer import ThreadingMixIn
 from perceptive_layer import play_note
 from perceptive_layer import initialize_arms
 from user_input import user_input
@@ -83,12 +84,13 @@ class MyHandler(BaseHTTPRequestHandler):
             if have_heartbeat_sensor:
                 heartbeat_mode(20)
 
-        elif body_content[0] == "simon":
+        elif body_content[0] == "s":
             if have_simon_game:
                 starttime = datetime.datetime.strptime(body_content[1], "%Y-%m-%d %H:%M:%S.%f") 
                 currenttime = datetime.datetime.now()
                 start_in_scs = (starttime - currenttime).total_seconds()
                 time.sleep(start_in_scs)
+                simon_game()
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
@@ -138,6 +140,32 @@ def heartbeat_mode(time_interval):
         time.sleep(0.01)
     initialize_arms()
     print "debugging::heartbeat_mode ends"
+
+def simon_game():
+    initialize_arms()
+    print "Connect servos"
+    time.sleep(7)
+    print "Ready"
+    time.sleep(3)
+    print "Go"
+
+    red = mraa.Gpio(12)
+    blue = mraa.Gpio(13)
+
+    red.dir(mraa.DIR_OUT)
+    blue.dir(mraa.DIR_OUT)
+
+    result = simon.simon()
+
+    if (result == False):
+        red.write(1)
+    else:   
+        blue.write(1)
+
+    time.sleep(4)
+    red.write(0)
+    blue.write(0)
+    print "debugging:: simon game ends"
 
 print "Start listening on %s:%s" % (host, port)
 try:    

@@ -67,6 +67,7 @@ class MyHandler(SimpleHTTPRequestHandler):
             print "user_song_new=", user_song_new
             print len(user_song_new)
             reply = [robot_song_new, user_song_new]
+            reply = josn.dumps(reply)
 
 
         #reply back
@@ -213,13 +214,13 @@ def heart_play():
 def simon_game():
     currenttime = datetime.datetime.now()
     starttime = str(currenttime + datetime.timedelta(seconds=4))
-    pre_content = "simon" + "||" + starttime
+    pre_content = "s" + "||" + starttime
     print "message to sent = ", pre_content
     # print "Sending info to Edison 1"
-    # send_http_post(edison1_ip+":"+str(music_port), pre_content)
+    send_http_post(edison1_ip+":"+str(music_port), pre_content)
 
-    print "Sending info to Edison 2"
-    send_http_post(edison2_ip+":"+str(music_port), pre_content )
+    # print "Sending info to Edison 2"
+    # send_http_post(edison2_ip+":"+str(music_port), pre_content )
 
 print "Starting server at address %s:%s" % (host, web_port)
 try:
